@@ -177,7 +177,7 @@ int procuraListaAbertos(Lista *Abertos, int **MR){
     return 0;
 }
 
-int move(int **MR, Lista *Fechados, Lista *Abertos){
+void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
     int i=0,j=0,x=0,y=0,aux = 0;
 
     int **NM1, **NM2, **NM3, **NM4;   //NM = New matriz 
@@ -208,8 +208,17 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
         NM1[x][y] = NM1[x+1][y];
         NM1[x+1][y] = aux;
 
-        NM2[x][y] = NM1[x][y+1];
-        NM1[x][y+1] = aux;
+        NM2[x][y] = NM2[x][y+1];
+        NM2[x][y+1] = aux;
+
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
+
+
     }
 
     if(x == 0 && y==1){
@@ -223,6 +232,17 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
 
         NM3[x][y] = NM3[x][y-1];
         NM3[x][y-1] = aux;
+
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
+        if(procuraListaAbertos(Abertos,NM3) != 1){
+            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+        }
+        
     }
 
     if(x == 0 && y==2){
@@ -233,6 +253,13 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
 
         NM2[x][y] = NM2[x][y-1];
         NM2[x][y-1] = aux;
+
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
     }
 
     if(x==1 && y==0){
@@ -246,6 +273,16 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
 
         NM3[x][y] = NM3[x][y+1];
         NM3[x][y+1] = aux;
+
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
+        if(procuraListaAbertos(Abertos,NM3) != 1){
+            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+        }
         
     }
 
@@ -264,6 +301,19 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
         NM4[x][y] = NM4[x][y-1];
         NM4[x][y] = aux;
 
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
+        if(procuraListaAbertos(Abertos,NM3) != 1){
+            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+        }
+        if(procuraListaAbertos(Abertos,NM4) != 1){
+            Abertos = insereInicio(calcAestrela(NM4,MS),Abertos,NM4);
+        }
+
     }
 
     if(x== 1 && y==2){
@@ -276,6 +326,16 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
         NM3[x][y] = NM3[x-1][y];
         NM3[x-1][y] = aux;
 
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
+        if(procuraListaAbertos(Abertos,NM3) != 1){
+            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+        }
+
     }
 
     if(x == 2 && y == 0){
@@ -284,6 +344,13 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
        
         NM2[x][y] = NM2[x][y+1];
         NM2[x][y+1] = aux; 
+
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
     }
 
     if(x == 2 && y==1){
@@ -296,6 +363,15 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
         NM3[x][y] = NM3[x][y-1];
         NM3[x][y-1] = aux;
 
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
+        if(procuraListaAbertos(Abertos,NM3) != 1){
+            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+        }
 
     }
     if(x == 2 && y == 2){
@@ -306,6 +382,13 @@ int move(int **MR, Lista *Fechados, Lista *Abertos){
 
         NM2[x][y] = NM2[x][y-1];
         NM2[x][y-1] = aux;
+
+        if(procuraListaAbertos(Abertos,NM1) != 1){
+            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+        }
+        if(procuraListaAbertos(Abertos,NM2) != 1){
+            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+        }
     }
 }
 
