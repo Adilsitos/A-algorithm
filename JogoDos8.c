@@ -150,52 +150,162 @@ Lista *insereInicio(int heuristicaEstrela, Lista *L, int **M){
 
 void imprime(Lista *L){
     Lista *aux =L;
-    Lista *aux2 = L;
     while(aux != NULL){
         imprimeMatriz(aux->matriz);
         aux = aux->prox;
     }
-    aux = aux2;
-}
-
-int procuraListaAbertos(Lista *Abertos){
     
 }
 
-int **move(int **MR, Lista *Fechados){
-    int i=0,j=0,x=0,y=0,auxX = 0,auxY = 0;
-
-    for(i = 0; i<3;i++){
-        for(j=0;j<3;j++){
-            if(MR[i][j] == 0){
-                x = i;
-                y = j;
+int procuraListaAbertos(Lista *Abertos, int **MR){
+    Lista *aux = Abertos;
+    int x =0, y=0,cont=0;
+    while(aux != NULL){
+        for(x=0;x<3;x++){
+            for(y=0;y<3;y++){
+                if(aux->matriz[x][y] == MR[x][y]){
+                    cont++;
+                }
             }
         }
+        if(cont == 9){
+            return 1;
+        }
+        cont = 0;
+        aux = aux->prox;
     }
+    return 0;
+}
 
-    if(x == 0 && y == 0 ){
-        int **NM1, **NM2;   //NM = New matriz 
+int move(int **MR, Lista *Fechados, Lista *Abertos){
+    int i=0,j=0,x=0,y=0,aux = 0;
+
+    int **NM1, **NM2, **NM3, **NM4;   //NM = New matriz 
 
         for(i=0;i<3;i++){
             NM1[i] = (int*) malloc(3*sizeof(int)); //alocando uma matriz
             NM2[i] = (int*) malloc(3*sizeof(int));//alocando uma matriz
+            NM3[i] = (int*) malloc(3*sizeof(int));
+            NM4[i] = (int*) malloc(3*sizeof(int));
         }
 
-        for(i=0;i<3;i++){
+         for(i=0;i<3;i++){
             for(j=0;j<3;j++){
                 NM1[i][j] = MR[i][j]; //deixando a matriz alocada com mesmo valor de M
                 NM2[i][j] = MR[i][j];
+                NM3[i][j] = MR[i][j];
+                NM4[i][j] = MR[i][j];
+
+                if(MR[i][j] == 0){
+                    x = i;
+                    y = j;
+                }               
             }
         }
-        auxX = NM1[x][y];
-        NM1[x][y] = NM1[x+1][j];
-        NM1[x+1][j] = auxX;
+    aux = NM1[x][y];
+    if(x == 0 && y == 0 ){ 
+       
+        NM1[x][y] = NM1[x+1][y];
+        NM1[x+1][y] = aux;
 
-        auxY=NM1[x][y];
-        NM2[x][y] = NM1[x][j+1];
-        NM1[x][j+1] = auxY;
+        NM2[x][y] = NM1[x][y+1];
+        NM1[x][y+1] = aux;
+    }
 
+    if(x == 0 && y==1){
+        
+
+        NM1[x][y] = NM1[x+1][y];
+        NM1[x+1][y] = aux;
+
+        NM2[x][y] = NM2[x][y+1];
+        NM2[x][y+1] = aux;
+
+        NM3[x][y] = NM3[x][y-1];
+        NM3[x][y-1] = aux;
+    }
+
+    if(x == 0 && y==2){
+        
+
+        NM1[x][y] = NM1[x+1][y];
+        NM1[x+1][y] = aux;
+
+        NM2[x][y] = NM2[x][y-1];
+        NM2[x][y-1] = aux;
+    }
+
+    if(x==1 && y==0){
+        
+
+        NM1[x][y] = NM1[x+1][y];
+        NM1[x+1][y] = aux;
+
+        NM2[x][y] = NM2[x-1][y];
+        NM2[x-1][y] = aux;
+
+        NM3[x][y] = NM3[x][y+1];
+        NM3[x][y+1] = aux;
+        
+    }
+
+    if(x==1 && y==1){
+        
+
+        NM1[x][y] = NM1[x+1][y];
+        NM1[x+1][y] = aux;
+       
+        NM2[x][y] = NM2[x][y+1];
+        NM2[x][y+1] = aux;
+        
+        NM3[x][y] = NM3[x-1][y];
+        NM3[x-1][y] = aux;
+
+        NM4[x][y] = NM4[x][y-1];
+        NM4[x][y] = aux;
+
+    }
+
+    if(x== 1 && y==2){
+        NM1[x][y] = NM1[x+1][y];
+        NM1[x+1][y] = aux;
+       
+        NM2[x][y] = NM2[x][y-1];
+        NM2[x][y-1] = aux;
+        
+        NM3[x][y] = NM3[x-1][y];
+        NM3[x-1][y] = aux;
+
+    }
+
+    if(x == 2 && y == 0){
+        NM1[x][y] = NM1[x-1][y];
+        NM1[x-1][y] = aux;
+       
+        NM2[x][y] = NM2[x][y+1];
+        NM2[x][y+1] = aux; 
+    }
+
+    if(x == 2 && y==1){
+        NM1[x][y] = NM1[x-1][y];
+        NM1[x-1][y] = aux;
+       
+        NM2[x][y] = NM2[x][y+1];
+        NM2[x][y+1] = aux;
+
+        NM3[x][y] = NM3[x][y-1];
+        NM3[x][y-1] = aux;
+
+
+    }
+    if(x == 2 && y == 2){
+        aux = NM1[x][y];
+
+        NM1[x][y] = NM1[x-1][y];
+        NM1[x-1][y] = aux;
+
+        NM2[x][y] = NM2[x][y-1];
+        NM2[x][y-1] = aux;
     }
 }
 
