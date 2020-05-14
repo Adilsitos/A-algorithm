@@ -138,11 +138,13 @@ Lista *insereInicio(int heuristicaEstrela, Lista *L, int **M){
        L->prox =NULL;
        return L;
     }else{
+        
         Lista *novo;
         novo = (Lista*) malloc(sizeof(Lista));
         novo->heuristica = heuristicaEstrela;
-        novo->matriz;
+        novo->matriz = M;
         novo->prox = L;
+       
         return novo;
     }
 }
@@ -150,38 +152,79 @@ Lista *insereInicio(int heuristicaEstrela, Lista *L, int **M){
 
 void imprime(Lista *L){
     Lista *aux =L;
+    int **MS;
+    MS = criaMatrizSolucao(MS);
     while(aux != NULL){
         imprimeMatriz(aux->matriz);
+        printf("Heuristica %d\n",calcAestrela(aux->matriz,MS));
         aux = aux->prox;
     }
     
 }
+int comparaMatriz(int **M1, int **M2){
+    int x=0,y=0,cont=0;
+    for(x=0;x<3;x++){
+        for(y=0;y<3;y++){
+            if(M1[x][y] == M2[x][y]){
+                cont++;
+            }
+        }
+    }
+    return cont;
+}
+
 
 int procuraListaAbertos(Lista *Abertos, int **MR){
     Lista *aux = Abertos;
-    int x =0, y=0,cont=0;
+    int x =0, y=0;
+    
     while(aux != NULL){
-        for(x=0;x<3;x++){
-            for(y=0;y<3;y++){
-                if(aux->matriz[x][y] == MR[x][y]){
-                    cont++;
-                }
-            }
-        }
-        if(cont == 9){
+     
+        if(comparaMatriz(aux->matriz,MR) == 9){
+            //printf("Valor ja aberto");
             return 1;
+
         }
-        cont = 0;
+        
         aux = aux->prox;
     }
     return 0;
 }
 
-void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
+
+Lista *excluiListaFechados(Lista *Fechados, int **MR){
+    Lista *aux = Fechados;
+    Lista *ant = NULL;
+    
+    if(aux == NULL){
+        return NULL;
+    }else{
+        while(comparaMatriz(aux->matriz,MR) != 9 && aux != NULL){
+            ant = aux;
+            aux = aux->prox;
+        }
+        if(aux == NULL){
+            return Fechados;
+        }else if(ant == NULL){
+            Fechados = aux->prox;
+            free(aux);
+            return Fechados;
+        }else{
+            ant->prox = aux->prox;
+            free(aux);
+            return Fechados;
+        }
+    }
+}
+
+Lista *move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
+    
     int i=0,j=0,x=0,y=0,aux = 0;
-
     int **NM1, **NM2, **NM3, **NM4;   //NM = New matriz 
-
+    NM1 = (int**)malloc(3*sizeof(int)); //alocando uma matriz
+    NM2 = (int**)malloc(3*sizeof(int));//alocando uma matriz
+    NM3 = (int**)malloc(3*sizeof(int));//alocando uma matriz
+    NM4 = (int**)malloc(3*sizeof(int));
         for(i=0;i<3;i++){
             NM1[i] = (int*) malloc(3*sizeof(int)); //alocando uma matriz
             NM2[i] = (int*) malloc(3*sizeof(int));//alocando uma matriz
@@ -203,6 +246,7 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
             }
         }
     aux = NM1[x][y];
+   
     if(x == 0 && y == 0 ){ 
        
         NM1[x][y] = NM1[x+1][y];
@@ -212,13 +256,11 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM2[x][y+1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
-
-
     }
 
     if(x == 0 && y==1){
@@ -234,13 +276,13 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM3[x][y-1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
         if(procuraListaAbertos(Abertos,NM3) != 1){
-            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+            Fechados = insereInicio(calcAestrela(NM3,MS),Fechados,NM3);
         }
         
     }
@@ -255,10 +297,10 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM2[x][y-1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
     }
 
@@ -275,13 +317,13 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM3[x][y+1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
         if(procuraListaAbertos(Abertos,NM3) != 1){
-            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+            Fechados = insereInicio(calcAestrela(NM3,MS),Fechados,NM3);
         }
         
     }
@@ -299,19 +341,19 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM3[x-1][y] = aux;
 
         NM4[x][y] = NM4[x][y-1];
-        NM4[x][y] = aux;
+        NM4[x][y-1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
         if(procuraListaAbertos(Abertos,NM3) != 1){
-            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+            Fechados = insereInicio(calcAestrela(NM3,MS),Fechados,NM3);
         }
         if(procuraListaAbertos(Abertos,NM4) != 1){
-            Abertos = insereInicio(calcAestrela(NM4,MS),Abertos,NM4);
+            Fechados = insereInicio(calcAestrela(NM4,MS),Fechados,NM4);
         }
 
     }
@@ -327,13 +369,13 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM3[x-1][y] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
         if(procuraListaAbertos(Abertos,NM3) != 1){
-            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+            Fechados = insereInicio(calcAestrela(NM3,MS),Fechados,NM3);
         }
 
     }
@@ -346,10 +388,10 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM2[x][y+1] = aux; 
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
     }
 
@@ -364,13 +406,13 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM3[x][y-1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
         if(procuraListaAbertos(Abertos,NM3) != 1){
-            Abertos = insereInicio(calcAestrela(NM3,MS),Abertos,NM3);
+            Fechados = insereInicio(calcAestrela(NM3,MS),Fechados,NM3);
         }
 
     }
@@ -384,13 +426,78 @@ void move(int **MR,int **MS, Lista *Fechados, Lista *Abertos){
         NM2[x][y-1] = aux;
 
         if(procuraListaAbertos(Abertos,NM1) != 1){
-            Abertos = insereInicio(calcAestrela(NM1,MS),Abertos,NM1);
+            Fechados = insereInicio(calcAestrela(NM1,MS),Fechados,NM1);
         }
         if(procuraListaAbertos(Abertos,NM2) != 1){
-            Abertos = insereInicio(calcAestrela(NM2,MS),Abertos,NM2);
+            Fechados = insereInicio(calcAestrela(NM2,MS),Fechados,NM2);
         }
     }
+    
+    //Fechados = excluiListaFechados(Fechados,MR);
+    
+    return Fechados;
 }
+
+int **procuraMenor(Lista *Fechados){
+    
+    Lista *aux = Fechados;
+
+    Lista *menor = Fechados;
+    while(aux != NULL){
+        if(menor->heuristica > aux->heuristica){
+            menor = aux;
+        }
+
+        aux = aux->prox;
+    }
+
+    return menor->matriz;
+
+}
+
+int Resolve(Lista *Fechados, Lista *Abertos, int **MR, int **MS){
+    int i =0;
+    if(Fechados == NULL){
+        Abertos = insereInicio(calcAestrela(MR,MS),Abertos,MR);
+        Fechados = move(MR,MS,Fechados,Abertos);
+        i = Resolve(Fechados,Abertos,procuraMenor(Fechados),MS);
+    }
+    int **Menor, x= 0;
+    Menor = (int**)malloc(3*sizeof(int));
+    for(x=0;x<3;x++){
+        Menor[x] = (int*) malloc(3*sizeof(int));
+    }
+    Menor = (procuraMenor(Fechados));
+    if(calcAestrela (Menor,MS) != 0){
+        
+        Abertos = insereInicio(calcAestrela(MR,MS),Abertos,Menor);
+        Fechados = move(Menor,MS,Fechados,Abertos);
+        Fechados = excluiListaFechados(Fechados,Menor);
+        printf("Menor valor");
+        imprimeMatriz(Menor);
+        //printf("Matriz Random original");
+       
+        printf("Heuristica %d\n",calcAestrela(Menor,MS));
+        
+        //printf("Fechados \n");
+        //imprime(Fechados);
+        //printf("Abertos \n");
+        //imprime(Abertos);
+        //getchar();
+        
+        i = Resolve(Fechados,Abertos,Menor,MS);
+    }else{
+        printf("Resolvido com sucesso");
+        imprimeMatriz(Menor);
+        return 1;
+    }
+
+       
+        
+
+  
+}
+
 
 int main(){
     int **MS;
@@ -400,19 +507,41 @@ int main(){
     MS = criaMatrizSolucao(MS);
     MR =  criaMatrizRandom(MR);
     
-    imprimeMatriz(MR);
+    //imprimeMatriz(MR);
     imprimeMatriz(MS);
 
-    MT = (int**)malloc(3*sizeof(int*));
+    
+    Lista *Abertos = NULL; 
+    Lista *Fechados = NULL;
+
+
+    MT=(int**)malloc(3* sizeof(int*)); //alocando espaço de memoria na matriz
+    int y,z=0; // variaveis utilizadas para percorrer a matriz
     for(x=0;x<3;x++){
         MT[x]=(int*)malloc(3*sizeof(int)); //alocando espaço de memoria na matriz
     }
 
-    Lista *Abertos = NULL; 
-    Lista *Fechados = NULL;
+    MT[0][0]=4;
+    MT[0][1] = 5;
+    MT[0][2] = 6;
+    MT[1][0] = 1;
+    MT[1][1] = 2;
+    MT[1][2] = 0;
+    MT[2][0] = 3;
+    MT[2][1] = 7;
+    MT[2][2] = 8;
+    imprimeMatriz(MT);
 
-    Abertos = insereInicio(calcAestrela(MR,MS),Abertos,MT);
+    Resolve(Fechados,Abertos,MR,MS);
+    //Fechados = insereInicio(calcAestrela(MR,MS),Fechados,MR);
+    //Fechados = insereInicio(calcAestrela(MR,MS),Fechados,MS);
+    
+    //Fechados = excluiListaFechados(Fechados,MS);
+    //imprime(Fechados);
+    /*Abertos = insereInicio(calcAestrela(MR,MS),Abertos,MR);
+    printf("valores abertos\n");
     imprime(Abertos);
-    printf("cabo");
-
+    Fechados = move(MR,MS,Fechados,Abertos);
+    printf("valores fechados\n");
+    imprime(Fechados);*/
 }
